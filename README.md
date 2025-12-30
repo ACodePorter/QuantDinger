@@ -245,7 +245,7 @@ docker-compose up -d --build
 
 #### 2. Configuration & Access
 
-- **Frontend UI**: http://localhost
+- **Frontend UI**: http://localhost:8888
 - **Default Account**: `quantdinger` / `123456`
 
 > **Note**: For production or AI features, edit `backend_api_python/.env` (add `OPENROUTER_API_KEY`, change passwords) and restart with `docker-compose restart backend`.

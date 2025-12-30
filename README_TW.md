@@ -245,7 +245,7 @@ docker-compose up -d --build
 
 #### 2. 訪問與配置
 
-- **前端 UI**: http://localhost
+- **前端 UI**: http://localhost:8888
 - **默認賬號**: `quantdinger` / `123456`
 
 > **注意**：為了使用 AI 功能或生產環境安全，請編輯 `backend_api_python/.env`（添加 `OPENROUTER_API_KEY`，修改密碼），然後執行 `docker-compose restart backend` 重啟服務。
