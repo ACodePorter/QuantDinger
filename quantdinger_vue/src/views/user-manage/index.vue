@@ -204,18 +204,24 @@
           >
             <!-- Strategy Status -->
             <template slot="strategyStatus" slot-scope="text">
-              <a-badge :status="text === 'running' ? 'processing' : 'default'" />
-              <a-tag :color="text === 'running' ? 'green' : 'default'" size="small">
-                {{ text === 'running' ? ($t('systemOverview.running') || 'Running') : ($t('systemOverview.stopped') || 'Stopped') }}
-              </a-tag>
+              <span class="status-cell">
+                <span class="status-dot" :class="text === 'running' ? 'dot-running' : 'dot-stopped'" />
+                <span :class="text === 'running' ? 'status-running' : 'status-stopped'">
+                  {{ text === 'running' ? ($t('systemOverview.running') || 'Running') : ($t('systemOverview.stopped') || 'Stopped') }}
+                </span>
+              </span>
             </template>
 
             <!-- User Column -->
             <template slot="userInfo" slot-scope="text, record">
-              <span class="user-cell">
-                <a-icon type="user" style="margin-right: 4px; color: #1890ff" />
-                {{ record.nickname || record.username || '-' }}
-              </span>
+              <a-tooltip :title="(record.nickname || record.username || '-')">
+                <span class="user-cell">
+                  <a-avatar size="small" :style="{ backgroundColor: getUserColor(record.user_id), fontSize: '11px', marginRight: '6px' }">
+                    {{ (record.nickname || record.username || '?').charAt(0).toUpperCase() }}
+                  </a-avatar>
+                  <span class="user-name">{{ truncate(record.nickname || record.username || '-', 8) }}</span>
+                </span>
+              </a-tooltip>
             </template>
 
             <!-- Symbol Column -->
@@ -751,6 +757,11 @@ export default {
       this.loadSystemStrategies()
     },
 
+    getUserColor (userId) {
+      const colors = ['#1890ff', '#722ed1', '#13c2c2', '#fa8c16', '#eb2f96', '#52c41a', '#2f54eb', '#faad14']
+      return colors[(userId || 0) % colors.length]
+    },
+
     formatNumber (num) {
       if (!num && num !== 0) return '0'
       return Number(num).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
@@ -1209,8 +1220,64 @@ export default {
     margin-top: 2px;
   }
 
+  // Status cell
+  .status-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+
+    .status-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+
+      &.dot-running {
+        background: #52c41a;
+        box-shadow: 0 0 6px rgba(82, 196, 26, 0.5);
+        animation: pulse-green 2s infinite;
+      }
+
+      &.dot-stopped {
+        background: #d9d9d9;
+      }
+    }
+
+    .status-running {
+      color: #52c41a;
+      font-weight: 500;
+      font-size: 13px;
+    }
+
+    .status-stopped {
+      color: #999;
+      font-size: 13px;
+    }
+  }
+
+  @keyframes pulse-green {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  // User cell
   .user-cell {
-    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: default;
+
+    .user-name {
+      font-size: 13px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 80px;
+    }
   }
 
   .indicator-name {
